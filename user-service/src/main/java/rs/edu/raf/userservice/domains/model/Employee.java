@@ -1,17 +1,12 @@
 package rs.edu.raf.userservice.domains.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
+import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -19,9 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Entity
-@Table(
-        name="employees",
-        uniqueConstraints = {@UniqueConstraint( columnNames = {"email", "jmbg"})})
+@ToString
 public class Employee implements Serializable {
 
     @Id
@@ -53,26 +46,31 @@ public class Employee implements Serializable {
     private String phoneNumber;
 
     @NotNull(message = "This field cannot be NULL")
-    private String address;
-
-    @NotNull(message = "This field cannot be NULL")
     @Email
     private String email;
 
-    @NotNull(message = "This field cannot be NULL")
     private String password;
 
     @NotNull(message = "This field cannot be NULL")
-    private String saltPassword;
-
-    @NotNull(message = "This field cannot be NULL")
     private Boolean isActive;
+
+    private String address;
 
     private String position;
 
     private String department;
 
-    @JsonIgnore
-    @ManyToMany(mappedBy = "employees")
-    private List<Role> roles = new ArrayList<>();
+    private String saltPassword;
+
+    @ManyToOne()
+    @JoinColumn(name = "roleId")
+    private Role role;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "employee_permissions",
+            joinColumns = @JoinColumn(name = "employeeId"),
+            inverseJoinColumns = @JoinColumn(name = "permissionId")
+    )
+    private List<Permission> permissions;
 }

@@ -1,38 +1,32 @@
 package rs.edu.raf.userservice.domains.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
 import rs.edu.raf.userservice.domains.model.enums.PermissionName;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.persistence.*;
 
 @Data
 @Builder
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Entity
-@Table(name="permissions")
-public class Permission {
+public class Permission implements GrantedAuthority {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long permissionId;
 
     @Enumerated(EnumType.STRING)
+    @JsonIgnore
     private PermissionName permissionName;
 
-    @JsonIgnore
-    @ManyToMany
-    @JoinTable(
-            name = "role_permissions",
-            joinColumns = @JoinColumn(name = "permissionId"),
-            inverseJoinColumns = @JoinColumn(name = "roleId")
-    )
-    private List<Role> roles = new ArrayList<>();
-
+    @Override
+    public String getAuthority() {
+        return permissionName.toString();
+    }
 }

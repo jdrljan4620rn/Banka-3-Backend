@@ -1,25 +1,20 @@
 package rs.edu.raf.userservice.domains.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import rs.edu.raf.userservice.domains.model.enums.RoleName;
 
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
-
 import java.util.List;
-
 
 @Data
 @Builder
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Entity
-@Table(name="roles")
+@ToString
 public class Role implements Serializable {
 
     @Id
@@ -30,11 +25,11 @@ public class Role implements Serializable {
     private RoleName roleName;
 
     @JsonIgnore
-    @ManyToMany
-    @JoinTable(
-            name = "emoployee_roles",
-            joinColumns = @JoinColumn(name = "roleId"),
-            inverseJoinColumns = @JoinColumn(name = "employeeId")
-    )
+    @OneToMany(mappedBy = "role")
     private List<Employee> employees = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "role")
+    private List<User> users = new ArrayList<>();
+
 }
